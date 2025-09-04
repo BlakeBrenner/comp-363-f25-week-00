@@ -1,114 +1,113 @@
 class MinHeap:
- """Array-based implementation of a minimum heap (priority queue)."""
+    """Array-based implementation of a minimum heap (priority queue)."""
+
     def __init__(self):
+        # Dynamic list (no fixed capacity); we still track count explicitly
         self.heap_array = []
         self.element_counter = 0
 
-    #helper methods
-    def left_child(parent: int) -> int:
+    # -------------
+    # Helper methods
+    # -------------
+    def left_child(self, parent: int) -> int:
         return 2 * parent + 1
 
-    def right_child(parent: int) -> int:
+    def right_child(self, parent: int) -> int:
         return 2 * (parent + 1)
 
-    def parent(child: int) -> int:
+    def parent(self, child: int) -> int:
         return (child - 1) // 2
 
-    def swap(heap_array: list, i: int, j: int) -> None:
-        """In place swap of two array elements."""
+    def swap(self, i: int, j: int) -> None:
+        """In-place swap of two array elements."""
         if i != j:
-            temp = heap_array[i]
-            heap_array[i] = heap_array[j]
-            heap_array[j] = temp
+            temp = self.heap_array[i]
+            self.heap_array[i] = self.heap_array[j]
+            self.heap_array[j] = temp
 
-    #heap property maintence
-    def restore_heap_upward(self, index:int) -> None:
-        """Restore heap property up after insertion"""
+    # ------------------------------
+    # Heap property maintenance ops
+    # ------------------------------
+    def restore_heap_upward(self, index: int) -> None:
+        """Restore heap property after insertion (bubble up)."""
         while index > 0:
-            p = self.get_parent_index(index) #find parent index
-            if self.heap_array[index] < self.help_array[p]: 
-                #if current element is smaller than parent swap them
-                self.swap = (index, p)
-                #Move index pointer up to parent
+            p = self.parent(index)
+            if self.heap_array[index] < self.heap_array[p]:
+                self.swap(index, p)
                 index = p
             else:
-                index = 0 #exit array
+                # end loop without break/continue
+                index = 0
 
     def restore_heap_downward(self, index: int) -> None:
-        """restore heap downward after removal"""
-        size = self.element_counter 
-        fin = False
-        while not fin:
-            #get left and right child indexes
-            l = self.get_left_child_index(index)
-            r = self.get_right_child_index(index)
-            smallest = index # assume current index is smallest
-            #compare with left child
+        """Restore heap property after removal (bubble down)."""
+        size = self.element_counter
+        finished = False
+        while not finished:
+            l = self.left_child(index)
+            r = self.right_child(index)
+            smallest = index
+
             if l < size and self.heap_array[l] < self.heap_array[smallest]:
                 smallest = l
-            #compare with right child
             if r < size and self.heap_array[r] < self.heap_array[smallest]:
                 smallest = r
-            # if one of children is smaller, swap and continue down
+
             if smallest != index:
                 self.swap(index, smallest)
                 index = smallest
             else:
-                # heap prop restored
-                fin = True
-    # Public heap operations
-    def insert(self, value:str) -> None:
+                finished = True
+
+    # -----------------
+    # Public operations
+    # -----------------
+    def insert(self, value: str) -> None:
         """Add a new element to the heap array."""
-        if self.element_counter < len(self.heap_array):
-            #place the element at the next available slot
-            self.heap_array[self.element_counter] = value
-            #increase count
-            self.element_counter += 1
-            #restore heap property upward
-            self.restore_heap_upward(self.element_counter -1)
+        self.heap_array.append(value)
+        self.element_counter += 1
+        self.restore_heap_upward(self.element_counter - 1)
+
     def remove_min(self) -> str | None:
-        """Remove and return smallest element"""
+        """Remove and return the smallest element."""
         removed = None
         if self.element_counter > 0:
-            #smallest elment is always index 0
-            removed = self.heap[0]
-            #replace root with last element in the heap
+            removed = self.heap_array[0]
+            # Move last element to root and shrink array
             self.heap_array[0] = self.heap_array[self.element_counter - 1]
-            #clear last slot
-            self.heap_array[self.element_counter -1] = None
-            #Decrease the count of elements
+            self.heap_array.pop()
             self.element_counter -= 1
-            #restore the heap downward
-            if self.element_count > 0:
+            if self.element_counter > 0:
                 self.restore_heap_downward(0)
         return removed
 
-    #return smallest element
     def get_min(self) -> str | None:
-        """return without removing smallest element"""
+        """Return (without removing) the smallest element."""
+        result = None
         if self.element_counter > 0:
-            return self.heap_array[0]
-        return None
+            result = self.heap_array[0]
+        return result
 
-    #return size of array
     def get_size(self) -> int:
+        """Return the number of elements currently stored in the heap."""
         return self.element_counter
 
-    #print only the portion of the array that has elements
     def __str__(self) -> str:
-        return str(self.heap_array[:self.element_counter])
+        """Readable view of the heap’s current array."""
+        return str(self.heap_array)
+
 
 if __name__ == "__main__":
-    h = MinHeap()        # Create a heap with capacity 10
+    h = MinHeap()
 
-h.insert("delta")      # Add element
-h.insert("alpha")      # Add element
-h.insert("charlie")    # Add element
-h.insert("bravo")      # Add element
+    h.insert("delta")
+    h.insert("alpha")
+    h.insert("charlie")
+    h.insert("bravo")
 
-print("Heap contents:", h)        # ['alpha', 'bravo', 'charlie', 'delta']
-print("Smallest element:", h.get_min())  # alpha
-print("Heap size:", h.get_size())        # 4
+    print("Heap contents:", h)                 # ['alpha', 'bravo', 'charlie', 'delta']
+    print("Smallest element:", h.get_min())    # alpha
+    print("Heap size:", h.get_size())          # 4
 
-print("Removed:", h.remove_min())        # alpha
-print("After removal:", h)  
+    print("Removed:", h.remove_min())          # alpha
+    print("After removal:", h)                 # ['bravo', 'delta', 'charlie']
