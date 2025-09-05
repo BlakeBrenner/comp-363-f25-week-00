@@ -6,9 +6,7 @@ class MinHeap:
         self.heap_array = []
         self.element_counter = 0
 
-    # -------------
     # Helper methods
-    # -------------
     def left_child(self, parent: int) -> int:
         return 2 * parent + 1
 
@@ -25,9 +23,7 @@ class MinHeap:
             self.heap_array[i] = self.heap_array[j]
             self.heap_array[j] = temp
 
-    # ------------------------------
     # Heap property maintenance ops
-    # ------------------------------
     def restore_heap_upward(self, index: int) -> None:
         """Restore heap property after insertion (bubble up)."""
         while index > 0:
@@ -59,9 +55,7 @@ class MinHeap:
             else:
                 finished = True
 
-    # -----------------
     # Public operations
-    # -----------------
     def insert(self, value: str) -> None:
         """Add a new element to the heap array."""
         self.heap_array.append(value)
